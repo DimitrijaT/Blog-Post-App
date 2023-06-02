@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from django.contrib import admin
+from datetime import datetime
 from django.forms import ModelForm
 from django.http import HttpRequest
-from django.contrib.admin import DateFieldListFilter
+# from django.contrib.admin import DateFieldListFilter
+from rangefilter.filters import DateRangeFilterBuilder, DateTimeRangeFilterBuilder, NumericRangeFilterBuilder
 
 from .models import BlogUser, Post, Comment, File, Block
 
@@ -23,9 +25,25 @@ class BlogUserAdmin(admin.ModelAdmin):
 class PostAdmin(admin.ModelAdmin):
     list_display = ["title", "user"]
     search_fields = ["title", "content"]
+    # list_filter = (
+    #     ('creation_date', DateFieldListFilter),
+    # )
+    # list_filter = (
+    #     ("creation_date", DateRangeFilterBuilder()),
+    #     (
+    #         "updated_at",
+    #         DateTimeRangeFilterBuilder(
+    #             title="Custom title",
+    #             default_start=datetime(2020, 1, 1),
+    #             default_end=datetime(2030, 1, 1),
+    #         ),
+    #     ),
+    #     ("num_value", NumericRangeFilterBuilder()),
+    # )
     list_filter = (
-        ('creation_date', DateFieldListFilter),
+        ("creation_date", DateRangeFilterBuilder()),
     )
+
     exclude = ["user"]
 
     def has_change_permission(self, request, obj=None):
