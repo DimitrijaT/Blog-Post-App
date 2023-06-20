@@ -7,6 +7,10 @@ class BlogUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     surname = models.CharField(max_length=50)
+    photo = models.ImageField(upload_to="photos/", null=True, blank=True)
+    interests = models.TextField(null=True, blank=True)
+    skills = models.TextField(null=True, blank=True)
+    profession = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         return self.name

@@ -21,30 +21,37 @@ class BlogUserAdmin(admin.ModelAdmin):
         return False
 
 
+# @admin.register(File)
+class FileAdmin(admin.TabularInline):
+    model = File
+    extra = 1
+    show_change_link = True
+
+    def has_view_permission(self, request, obj=None):
+        if request.user.is_superuser or (
+                obj and not Block.objects.filter(blocker__user=obj.user.user, blocked__user=request.user).exists()):
+            return True
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        if obj and request.user == obj.user.user:
+            return True
+        return False
+
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ["title", "user"]
     search_fields = ["title", "content"]
-    # list_filter = (
-    #     ('creation_date', DateFieldListFilter),
-    # )
-    # list_filter = (
-    #     ("creation_date", DateRangeFilterBuilder()),
-    #     (
-    #         "updated_at",
-    #         DateTimeRangeFilterBuilder(
-    #             title="Custom title",
-    #             default_start=datetime(2020, 1, 1),
-    #             default_end=datetime(2030, 1, 1),
-    #         ),
-    #     ),
-    #     ("num_value", NumericRangeFilterBuilder()),
-    # )
     list_filter = (
         ("creation_date", DateRangeFilterBuilder()),
     )
-
+    inlines = [FileAdmin, ]
     exclude = ["user"]
+
+    def save_model(self, request, obj, form, change):
+        obj.user = BlogUser.objects.get(user=request.user)
+        return super().save_model(request, obj, form, change)
 
     def has_change_permission(self, request, obj=None):
         # obj.user is our custom BlogUser, obj.user.user is the Django out of the box user
@@ -83,23 +90,14 @@ class CommentAdmin(admin.ModelAdmin):
         return False
 
 
-@admin.register(File)
-class FileAdmin(admin.ModelAdmin):
-
-    def has_view_permission(self, request, obj=None):
-        if request.user.is_superuser or (
-                obj and not Block.objects.filter(blocker__user=obj.user.user, blocked__user=request.user).exists()):
-            return True
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        if obj and request.user == obj.user.user:
-            return True
-        return False
-
-
 @admin.register(Block)
 class BlockAdmin(admin.ModelAdmin):
+    exclude = ["blocker"]
+
+    def save_model(self, request, obj, form, change):
+        obj.blocker = BlogUser.objects.get(user=request.user)
+        return super().save_model(request, obj, form, change)
+
     def has_view_permission(self, request, obj=None):
         return True
 

@@ -1,0 +1,43 @@
+{% extends "base_generic.html"%}
+
+{% block content %}
+
+
+<main>
+    <!-- Add Post Button -->
+    <div class="container add-post-btn">
+        <a href="{% url 'add_post' %}" class="btn btn-primary btn-lg">Add New Post</a>
+    </div>
+
+
+    <!-- Post Card -->
+    {% for post in posts %}
+    <div class="container">
+        <div class="card rotating-card">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="{{MEDIA_URL}}{{ post.user.photo.url }}" class="profile-circle" alt="">
+                    <h5 class="card-title">{{ post.user.name }} {{ post.user.surname }}</h5>
+                </div>
+                <h4 class="card-text">{{ post.title }}</h4>
+                <p class="card-text">{{ post.content }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="card-date">
+                        <small>Created: {{ post.creation_date }}</small>
+                    </div>
+                    <button class="btn btn-primary" type="button"
+                            id="dropdownMenuButton{{ post.id }}"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        Show Comments
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+
+</main>
+
+
+{% endblock %}

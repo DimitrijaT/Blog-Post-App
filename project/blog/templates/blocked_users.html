@@ -1,0 +1,39 @@
+{% extends "base_generic.html"%}
+
+{% block content %}
+
+
+<div class="container my-2">
+    <form method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button class="btn btn-danger">Block Him!</button>
+    </form>
+</div>
+
+
+<hr class="hr">
+
+{% for blocked_user in blocked_users %}
+<div class="container">
+    <div class="card rotating-card">
+        <div class="card-body">
+            <div class="d-flex align-items-center mb-3">
+                <img src="{{MEDIA_URL}}{{ blocked_user.photo.url }}" class="profile-circle" alt="">
+                <h5 class="card-title">{{ blocked_user.name }} {{ blocked_user.surname }}</h5>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="card-date">
+                    <small>Blocked User</small>
+                </div>
+                <div>
+                    <a href="{% url 'blocked_users' user_id=blocked_user.id %}" class="btn btn-primary">Unblock</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+
+{% endblock %}
